@@ -21,7 +21,8 @@
           "executor": "@nrwl/next:server",
           "options": {
             "buildTarget": "todo:build",
-            "dev": true
+            "dev": true,
+            "proxyConfig": "apps/todo/proxy.conf.json"
           },
           "configurations": {
             "production": {
@@ -48,6 +49,56 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/todo/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "todo-api": {
+      "root": "apps/todo-api",
+      "sourceRoot": "apps/todo-api/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/todo-api",
+            "main": "apps/todo-api/src/main.ts",
+            "tsConfig": "apps/todo-api/tsconfig.app.json",
+            "assets": ["apps/todo-api/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/todo-api/src/environments/environment.ts",
+                  "with": "apps/todo-api/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "todo-api:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/todo-api/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/todo-api"],
+          "options": {
+            "jestConfig": "apps/todo-api/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }
