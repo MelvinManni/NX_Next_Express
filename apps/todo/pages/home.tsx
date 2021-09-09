@@ -31,12 +31,12 @@ export const Input = styled.input`
 `;
 
 export function Home(props: HomeProps) {
-  const [items, setItems] = useState<Array<{ item: string; id: number }>>();
+  const [items, setItems] = useState<Array<{ item: string; id: string }>>([]);
   const [newItem, setNewItem] = useState<string>('');
 
   const fetchItems = async () => {
     try {
-      const data = await fetch('/api/fetch');
+      const data = await fetch('/api');
       const res = await data.json();
       setItems(res.data);
     } catch (error) {
@@ -46,23 +46,21 @@ export function Home(props: HomeProps) {
 
   const createItem = async (item: string) => {
     try {
-      const data = await fetch('/api/create', {
+      await fetch('/api', {
         method: 'POST',
         body: JSON.stringify({ item }),
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      setNewItem('');
-      await fetchItems();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const deleteItem = async (id: number) => {
+  const deleteItem = async (id: string) => {
     try {
-      const data = await fetch('/api/delete', {
+      const data = await fetch('/api', {
         method: 'DELETE',
         body: JSON.stringify({ id }),
         headers: {
@@ -70,16 +68,15 @@ export function Home(props: HomeProps) {
         },
       });
       const res = await data.json();
-      await fetchItems();
       alert(res.message);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const updateItem = async (id: number, updatedItem: string) => {
+  const updateItem = async (id: string, updatedItem: string) => {
     try {
-      const data = await fetch('/api/update', {
+      const data = await fetch('/api', {
         method: 'PATCH',
         body: JSON.stringify({ id, updatedItem }),
         headers: {
@@ -87,7 +84,6 @@ export function Home(props: HomeProps) {
         },
       });
       const res = await data.json();
-      await fetchItems();
       alert(res.message);
     } catch (error) {
       console.log(error);
@@ -102,21 +98,25 @@ export function Home(props: HomeProps) {
     <StyledHome>
       <h1>Welcome to Home!</h1>
       <TodoWrapper>
-        {items !== undefined &&
-          items.map((val, index) => (
+        {items.length > 0 &&
+          items.map((val) => (
             <TodoItem
-              key={index.toString()}
+              key={val.id}
               item={val.item}
               id={val.id}
               deleteItem={deleteItem}
               updateItem={updateItem}
+              fetchItems={fetchItems}
             />
           ))}
       </TodoWrapper>
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          createItem(newItem);
+          await createItem(newItem);
+          //Clean up new item 
+          setNewItem('');
+          await fetchItems();
         }}
       >
         <FlexWrapper>

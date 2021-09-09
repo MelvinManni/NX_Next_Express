@@ -5,10 +5,11 @@ import styled from 'styled-components';
 
 /* eslint-disable-next-line */
 export interface TodoItemProps {
-  updateItem(id: number, updatedItem: string): Promise<void>;
-  deleteItem(id: number): Promise<void>;
+  updateItem(id: string, updatedItem: string): Promise<void>;
+  deleteItem(id: string): Promise<void>;
+  fetchItems(): Promise<any>;
   item: string;
-  id: number;
+  id: string;
 }
 
 export const FlexWrapper = styled.div`
@@ -31,33 +32,39 @@ export const FlexWrapper = styled.div`
 `;
 
 export function TodoItem(props: TodoItemProps) {
-  const [update, setUpdate] = useState<boolean>(false);
-  const [item, setNewItem] = useState<string>(props.item);
+  const [update, setUpdate] = useState<'Edit' | 'Update'>('Edit');
+  const [item, setNewItem] = useState<string | null>(null);
 
   return (
     <FlexWrapper>
       <Input
-        value={item}
-        style={{ borderColor: update && '#1e4a88' }}
+        value={item === null ? props.item : item}
+        style={{ borderColor: update !== 'Edit' && '#1e4a88' }}
         onChange={({ target }) => setNewItem(target.value)}
-        disabled={!update}
+        disabled={update === 'Edit'}
       />
       <Button
         onClick={async () => {
-          if (update === false) {
-            setUpdate(true);
+          if (update === 'Edit') {
+            setUpdate('Update');
           } else {
             await props.updateItem(props.id, item);
-            setUpdate(false);
+
+            //fetch updated items
+            await props.fetchItems();
+            setUpdate('Edit');
           }
         }}
       >
-        {update ? 'Update' : 'Edit'}
+        {update}
       </Button>
       <Button
         danger
         onClick={async () => {
           await props.deleteItem(props.id);
+
+          //fetch updated items
+          await await props.fetchItems();
         }}
       >
         Delete
