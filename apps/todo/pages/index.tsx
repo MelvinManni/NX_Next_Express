@@ -15,6 +15,7 @@ export const Button = styled.button<{ danger?: boolean; success?: boolean }>`
   border: 0;
   color: #fff;
   font-size: 16px;
+  cursor: pointer;
   font-weight: 600;
   background-color: ${({ danger, success }) =>
     danger ? '#bb2124' : success ? '#22BB33' : '#0047AB'};

@@ -32,32 +32,35 @@ export const FlexWrapper = styled.div`
 `;
 
 export function TodoItem(props: TodoItemProps) {
-  const [update, setUpdate] = useState<'Edit' | 'Update'>('Edit');
+  const [isEditingItem, setIsEditingItem] = useState<boolean>(false);
   const [item, setNewItem] = useState<string | null>(null);
 
   return (
     <FlexWrapper>
       <Input
         value={item === null ? props.item : item}
-        style={{ borderColor: update !== 'Edit' && '#1e4a88' }}
+        isEditing={isEditingItem}
         onChange={({ target }) => setNewItem(target.value)}
-        disabled={update === 'Edit'}
+        disabled={!isEditingItem}
       />
-      <Button
-        onClick={async () => {
-          if (update === 'Edit') {
-            setUpdate('Update');
-          } else {
-            await props.updateItem(props.id, item);
 
+      {!isEditingItem && (
+        <Button onClick={() => setIsEditingItem(true)}>Edit</Button>
+      )}
+      
+      {isEditingItem && (
+        <Button
+          onClick={async () => {
+            await props.updateItem(props.id, item);
             //fetch updated items
             await props.fetchItems();
-            setUpdate('Edit');
-          }
-        }}
-      >
-        {update}
-      </Button>
+            setIsEditingItem(false);
+          }}
+        >
+          Update
+        </Button>
+      )}
+
       <Button
         danger
         onClick={async () => {

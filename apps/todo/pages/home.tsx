@@ -18,9 +18,10 @@ const TodoWrapper = styled.div`
   overflow-y: scroll;
 `;
 
-export const Input = styled.input`
+export const Input = styled.input<{ isEditing?: boolean }>`
   max-width: 100%;
-  border: 2px solid #eee;
+  border: 2px solid;
+  border-color: ${({ isEditing }) => (isEditing ? '#1e4a88' : '#eee')};
   border-radius: 4px;
   margin: 0;
   outline: none;
@@ -114,7 +115,7 @@ export function Home(props: HomeProps) {
         onSubmit={async (e) => {
           e.preventDefault();
           await createItem(newItem);
-          //Clean up new item 
+          //Clean up new item
           setNewItem('');
           await fetchItems();
         }}
