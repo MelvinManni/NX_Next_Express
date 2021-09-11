@@ -38,10 +38,10 @@ export function TodoItem(props: TodoItemProps) {
   return (
     <FlexWrapper>
       <Input
+        disabled={!isEditingItem}
         defaultValue={props.item}
         isEditing={isEditingItem}
         onChange={({ target }) => setNewItem(target.value)}
-        disabled={!isEditingItem}
       />
 
       {!isEditingItem && (
