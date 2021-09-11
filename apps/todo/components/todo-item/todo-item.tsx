@@ -38,7 +38,7 @@ export function TodoItem(props: TodoItemProps) {
   return (
     <FlexWrapper>
       <Input
-        value={item === null ? props.item : item}
+        defaultValue={props.item}
         isEditing={isEditingItem}
         onChange={({ target }) => setNewItem(target.value)}
         disabled={!isEditingItem}
@@ -47,7 +47,7 @@ export function TodoItem(props: TodoItemProps) {
       {!isEditingItem && (
         <Button onClick={() => setIsEditingItem(true)}>Edit</Button>
       )}
-      
+
       {isEditingItem && (
         <Button
           onClick={async () => {
